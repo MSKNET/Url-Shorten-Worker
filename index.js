@@ -1,5 +1,5 @@
 const config = {
-no_ref: "off", //Control the HTTP referrer header, if you want to create an anonymous link that will hide the HTTP Referer header, please set to "on" .
+no_ref: "on", //Control the HTTP referrer header, if you want to create an anonymous link that will hide the HTTP Referer header, please set to "on" .
 theme:"",//Homepage theme, use the empty value for default theme. To use urlcool theme, please fill with "theme/urlcool" .
 cors: "on",//Allow Cross-origin resource sharing for API requests.
 unique_link:true,//If it is true, the same long url will be shorten into the same short url
@@ -11,7 +11,7 @@ const html404 = `<!DOCTYPE html>
 <body>
   <h1>404 Not Found.</h1>
   <p>The url you visit is not found.</p>
-  <a href="https://github.com/xyTom/Url-Shorten-Worker/" target="_self">Fork me on GitHub</a>
+  <a href="https://github.com/MSKNET/Url-Shorten-Worker/" target="_self">Fork me on GitHub</a>
 </body>`
 
 let response_header={
@@ -23,18 +23,19 @@ if (config.cors=="on"){
   "content-type": "text/html;charset=UTF-8",
   "Access-Control-Allow-Origin":"*",
   "Access-Control-Allow-Methods": "POST",
+  "Access-Control-Allow-Headers": "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With",
   }
 }
 
 async function randomString(len) {
-　　len = len || 6;
-　　let $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
-　　let maxPos = $chars.length;
-　　let result = '';
-　　for (i = 0; i < len; i++) {
-　　　　result += $chars.charAt(Math.floor(Math.random() * maxPos));
-　　}
-　　return result;
+  len = len || 3;
+  let $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
+  let maxPos = $chars.length;
+  let result = '';
+  for (i = 0; i < len; i++) {
+    result += $chars.charAt(Math.floor(Math.random() * maxPos));
+  }
+  return result;
 }
 
 async function sha512(url){
@@ -148,7 +149,7 @@ async function handleRequest(request) {
   console.log(path)
   if(!path){
 
-    const html= await fetch("https://xytom.github.io/Url-Shorten-Worker/"+config.theme+"/index.html")
+    const html= await fetch("https://msknet.github.io/Url-Shorten-Worker/"+config.theme+"/index.html")
     
     return new Response(await html.text(), {
     headers: {
@@ -171,7 +172,7 @@ async function handleRequest(request) {
   if (location) {
     if (config.safe_browsing_api_key){
       if(!(await is_url_safe(location))){
-        let warning_page = await fetch("https://xytom.github.io/Url-Shorten-Worker/safe-browsing.html")
+        let warning_page = await fetch("https://msknet.github.io/Url-Shorten-Worker/safe-browsing.html")
         warning_page =await warning_page.text()
         warning_page = warning_page.replace(/{Replace}/gm, location)
         return new Response(warning_page, {
@@ -182,7 +183,7 @@ async function handleRequest(request) {
       }
     }
     if (config.no_ref=="on"){
-      let no_ref= await fetch("https://xytom.github.io/Url-Shorten-Worker/no-ref.html")
+      let no_ref= await fetch("https://msknet.github.io/Url-Shorten-Worker/no-ref.html")
       no_ref=await no_ref.text()
       no_ref=no_ref.replace(/{Replace}/gm, location)
       return new Response(no_ref, {
